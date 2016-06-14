@@ -6,6 +6,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 
 public class GLFW_Wrapper {
 	private static GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err); //Callback padrão
@@ -62,7 +63,7 @@ public class GLFW_Wrapper {
 		}
 		else {
 			glfwMakeContextCurrent(window_ID);
-			//TODO: GL.createCapabilities(); //Binding
+			GL.createCapabilities(); //Binding
 		}
 	}
 

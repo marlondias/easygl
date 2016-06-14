@@ -1,24 +1,67 @@
 package marlon.engine.old;
 
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-
-import java.util.LinkedList;
-
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import marlon.engine.GLFWWindow_Wrapper;
+import marlon.engine.GLFW_Wrapper;
 
 public class GameGraphics {
-	private static final LinkedList<GLFWWindow_Wrapper> windows = new LinkedList<>();
-	
-    
-    public static void addWindow(GLFWWindow_Wrapper window){
-    	if (window != null) windows.add(window);
-    }
-    
-    public static void render(){
-    	//Blitting
-    	for (GLFWWindow_Wrapper w : windows){
-    		glfwSwapBuffers(w.getID());
-    	}
-    }
+	private GLFWWindow_Wrapper janela1;
 
+	
+	public GameGraphics(){
+		janela1 = new GLFWWindow_Wrapper(800, 600, "Aqui estoy!", true);
+    	janela1.setPosition(10, 10);
+    	janela1.setVisible(true);
+    	GLFW_Wrapper.setContextCurrent(janela1);
+    	
+    	GL11.glMatrixMode(GL11.GL_PROJECTION);
+    	GL11.glLoadIdentity();
+    	GL11.glOrtho(0, 800, 0, 600, 1, -1);
+    	GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	}
+	
+	
+    public void render(){
+    	//Inicia qualquer buffer ou whatever..
+    	
+        try {
+            //Passa por todas as MGameScreens e desenha
+        	
+        	if (!janela1.getShouldClose()){
+            	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); //Clear the screen and depth buffer
+            	GL11.glColor3f(0.5f,0.5f,1.0f); //Set the color of the quad (R,G,B,A)
+            	
+            	//Draw quad
+            	GL11.glBegin(GL11.GL_QUADS);
+            	    GL11.glVertex2f(100,100);
+            	    GL11.glVertex2f(100+200,100);
+            	    GL11.glVertex2f(100+200,100+200);
+            	    GL11.glVertex2f(100,100+200);
+            	GL11.glEnd();
+            	
+                GLFW.glfwSwapBuffers(janela1.getID());
+        	}
+
+        	//Blitting
+       	}
+    	finally {
+    		//Liberar recursos temporários
+    	}
+
+    }
+    
+    public void showFPS(int updates, int frames){
+    	janela1.setTitle("UPS: " + updates + " FPS: " + frames);
+    }
+    
+	
+	public boolean shouldTerminate(){
+		return janela1.getShouldClose();
+	}
+	
+	public void terminate(){
+		GLFW_Wrapper.terminateGLFW();
+	}
+	
 }

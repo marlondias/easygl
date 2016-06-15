@@ -1,8 +1,12 @@
-package marlon.engine;
+package marlon.engine.wrappers;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWCursorEnterCallback;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 
 //Encapsula uma janela GLFW
 public class GLFWWindow_Wrapper {
@@ -204,10 +208,10 @@ public class GLFWWindow_Wrapper {
 		return WINDOW_ID;
 	}
 
-	
-	public void setCallback(GLFWKeyCallback keyCallback){
+
+	public void setWindowCallback(GLFWWindowIconifyCallback callback){
 		if (!valid){
-			throw new IllegalStateException("Unable to set callback, GLFW window does not exist!");
+			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
 		}
 		
 		//TODO: Todos os callbacks, sobrecarregar
@@ -217,15 +221,116 @@ public class GLFWWindow_Wrapper {
 		//glfwSetWindowSizeCallback()
 		//glfwSetWindowFocusCallback()
 		//glfwSetWindowCloseCallback()
-
 	}
 
 	
+	
+	/**
+	 * Sets the cursor as current for this window. 
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setCursor(GLFWCursor_Wrapper cursor){
+		if (!valid){
+			throw new IllegalStateException("Unable set cursor, GLFW window does not exist!");
+		}
+		if (cursor != null) glfwSetCursor(WINDOW_ID , cursor.getID());
+	}
+
+	/**
+	 * Removes the current cursor of this window.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void removeCursor(){
+		if (!valid){
+			throw new IllegalStateException("Unable remove cursor, GLFW window does not exist!");
+		}
+		glfwSetCursor(WINDOW_ID , NULL);
+	}
+
+	/**
+	 * Changes the behavior of this window's cursor.
+	 * GLFW_CURSOR_NORMAL is the default.
+	 * GLFW_CURSOR_HIDDEN makes the cursor invisible only when it is over the window.
+	 * GLFW_CURSOR_DISABLED makes the cursor invisible and it's movement inside the window is unlimited (stuck in the window).
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setMouseMode(int mode){
+		if (!valid){
+			throw new IllegalStateException("Unable to set mouse mode, GLFW window does not exist!");
+		}
+		
+		if (mode == GLFW_CURSOR_HIDDEN) glfwSetInputMode(WINDOW_ID, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		else if (mode == GLFW_CURSOR_DISABLED) glfwSetInputMode(WINDOW_ID, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else glfwSetInputMode(WINDOW_ID, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	/**
+	 * Sets a callback function for when the cursor enters/leaves this window's limits.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setMouseCallBack(GLFWCursorEnterCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetCursorEnterCallback(WINDOW_ID, callback);
+	}
+
+	/**
+	 * Sets a callback function for scroll wheel interaction (mouse or touchpad).
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setMouseCallBack(GLFWScrollCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetScrollCallback(WINDOW_ID, callback);
+	}
+
+	/**
+	 * Sets a callback function for mouse buttons interaction.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setMouseCallBack(GLFWMouseButtonCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetMouseButtonCallback(WINDOW_ID, callback);
+	}
+
+	/**
+	 * Sets a callback function for cursor movements, while the mouse is over this window. 
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setMouseCallBack(GLFWCursorPosCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetCursorPosCallback(WINDOW_ID, callback);
+	}
+
+	
+	//glfwGetCursorPos(window, &xpos, &ypos);
+	
 	//glfwSetFramebufferSizeCallback()
 	//glfwSetKeyCallback()
+	//int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	
 	//TODO: verificar se são necessários
-	//glfwGetWindowUserPointer
+	//glfwGetWindowUserPointer()
 	//glfwSetWindowUserPointer()
 	//glfwSwapBuffers()
 	//glfwGetWindowSize() -- screen coordinates
@@ -233,7 +338,7 @@ public class GLFWWindow_Wrapper {
 	//glfwGetWindowPos()
 	//glfwGetWindowFrameSize() -- meh
 	//glfwGetWindowAttrib() -- varios retornos
-	//glfwGetFramebufferSize -- nice
+	//glfwGetFramebufferSize() -- nice
 	//glfwFocusWindow() 
 	
 	//TODO: Versão 3.2

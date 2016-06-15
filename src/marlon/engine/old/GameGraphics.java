@@ -2,17 +2,24 @@ package marlon.engine.old;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import marlon.engine.GLFWWindow_Wrapper;
-import marlon.engine.GLFW_Wrapper;
+import marlon.engine.wrappers.GLFWCursor_Wrapper;
+import marlon.engine.wrappers.GLFWWindow_Wrapper;
+import marlon.engine.wrappers.GLFW_Wrapper;
 
 public class GameGraphics {
 	private GLFWWindow_Wrapper janela1;
+	private GLFWCursor_Wrapper cursor1;
 
 	
 	public GameGraphics(){
+    	cursor1 = new GLFWCursor_Wrapper(GLFW.GLFW_CROSSHAIR_CURSOR);
+    	
 		janela1 = new GLFWWindow_Wrapper(800, 600, "Aqui estoy!", true);
     	janela1.setPosition(10, 10);
     	janela1.setVisible(true);
+    	janela1.setCursor(cursor1);
+
+    	
     	GLFW_Wrapper.setContextCurrent(janela1);
     	
     	GL11.glMatrixMode(GL11.GL_PROJECTION);

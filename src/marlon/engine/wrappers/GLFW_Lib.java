@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-public class GLFW_Wrapper {
+public class GLFW_Lib {
 	private static GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err); //Callback padrão
 	private static boolean initialized = false;
 	private static GLFWVidMode defaultVideoMode; //VideoMode padrão do sistema (antes da aplicação rodar)
@@ -54,7 +54,7 @@ public class GLFW_Wrapper {
 	 * 
 	 * @param window must be a valid Window object
 	 */
-	public static void setContextCurrent(GLFWWindow_Wrapper window){
+	public static void setContextCurrent(GLFW_Window window){
 		if (window == null) return;
 		
 		final long window_ID = window.getID();

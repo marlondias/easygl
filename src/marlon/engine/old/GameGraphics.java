@@ -2,25 +2,29 @@ package marlon.engine.old;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import marlon.engine.wrappers.GLFWCursor_Wrapper;
-import marlon.engine.wrappers.GLFWWindow_Wrapper;
-import marlon.engine.wrappers.GLFW_Wrapper;
+
+import marlon.engine.experimental.DebugInputCallbacks;
+import marlon.engine.experimental.DebugWindowCallbacks;
+import marlon.engine.experimental.TestTextCallbacks;
+import marlon.engine.wrappers.GLFW_Cursor;
+import marlon.engine.wrappers.GLFW_Window;
+import marlon.engine.wrappers.GLFW_Lib;
 
 public class GameGraphics {
-	private GLFWWindow_Wrapper janela1;
-	private GLFWCursor_Wrapper cursor1;
+	private GLFW_Window janela1;
+	private GLFW_Cursor cursor1;
 
 	
 	public GameGraphics(){
-    	cursor1 = new GLFWCursor_Wrapper(GLFW.GLFW_CROSSHAIR_CURSOR);
+    	cursor1 = new GLFW_Cursor(GLFW.GLFW_CROSSHAIR_CURSOR);
     	
-		janela1 = new GLFWWindow_Wrapper(800, 600, "Aqui estoy!", true);
+		janela1 = new GLFW_Window(800, 600, "Aqui estoy!", true);
+    	janela1.setCursor(cursor1);
     	janela1.setPosition(10, 10);
     	janela1.setVisible(true);
-    	janela1.setCursor(cursor1);
 
     	
-    	GLFW_Wrapper.setContextCurrent(janela1);
+    	GLFW_Lib.setContextCurrent(janela1);
     	
     	GL11.glMatrixMode(GL11.GL_PROJECTION);
     	GL11.glLoadIdentity();
@@ -68,7 +72,7 @@ public class GameGraphics {
 	}
 	
 	public void terminate(){
-		GLFW_Wrapper.terminateGLFW();
+		GLFW_Lib.terminateGLFW();
 	}
 	
 }

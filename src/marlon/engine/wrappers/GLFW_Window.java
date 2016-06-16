@@ -2,30 +2,35 @@ package marlon.engine.wrappers;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+
+import org.lwjgl.glfw.GLFWCharCallback;
+import org.lwjgl.glfw.GLFWCharModsCallback;
 import org.lwjgl.glfw.GLFWCursorEnterCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.glfw.GLFWWindowCloseCallback;
+import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowIconifyCallback;
+import org.lwjgl.glfw.GLFWWindowPosCallback;
+import org.lwjgl.glfw.GLFWWindowRefreshCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 //Encapsula uma janela GLFW
-public class GLFWWindow_Wrapper {
+public class GLFW_Window {
 	private final long WINDOW_ID; //Valor retonado por createWindow()
 	private boolean valid; //Se a criação ocorreu normalmente
-	//private int width, height; //Dimensões da janela
-	//private int positionX, positionY; //Posição da janela
-	//private boolean resizeable = false; //Se permite redimensionamento
-	//private String title; //Título dessa janela
 	
 	
-	public GLFWWindow_Wrapper(int width, int height, String title, boolean resizeable){
+	public GLFW_Window(int width, int height, String title, boolean resizeable){
 		//Evita erros comuns
 		if (width < 1) width = 1;
 		if (height < 1) height = 1;
 		if (title == null) title = "(null)";
 		
 		//Verifica a disponibilidade da biblioteca
-		if (!GLFW_Wrapper.isInitialized()) GLFW_Wrapper.initializeGLFW();
+		if (!GLFW_Lib.isInitialized()) GLFW_Lib.initializeGLFW();
 		
 		glfwWindowHint(GLFW_RESIZABLE, ((resizeable) ? GLFW_TRUE : GLFW_FALSE));
 		
@@ -34,7 +39,21 @@ public class GLFWWindow_Wrapper {
 		valid = (WINDOW_ID != NULL);
 	}
 	
-	
+
+	/**
+	 * Returns a number that identifies this window in GLFW functions.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 * @return unique ID for this window.
+	 */
+	public long getID(){
+		if (!valid){
+			throw new IllegalStateException("Unable access ID, GLFW window does not exist!");
+		}
+		return WINDOW_ID;
+	}
+
 	/**
 	 * Destroys this window and its context. After this method, no further callbacks will be called for this window.
 	 * If this window's context is CURRENT on the main thread, it is detached before being destroyed.
@@ -49,6 +68,7 @@ public class GLFWWindow_Wrapper {
 		glfwDestroyWindow(WINDOW_ID);
 	}
 
+
 	public void minimize(){
 		if(!valid){
 			throw new IllegalStateException("Unable to minimize/iconify, GLFW window does not exist!");
@@ -62,6 +82,7 @@ public class GLFWWindow_Wrapper {
 		}
 		glfwRestoreWindow(WINDOW_ID);
 	}
+
 	
 	/**
 	 * Sets the position, in screen coordinates, of the upper-left corner of the client area of this window. 
@@ -79,11 +100,40 @@ public class GLFWWindow_Wrapper {
 		else glfwSetWindowPos(WINDOW_ID, x, y);
 	}
 
-	public void getPosition(){
-		if(!valid){
-			throw new IllegalStateException("Unable to access position, GLFW window does not exist!");
+
+	/**
+	 * Changes the title of this window. If the string is NULL, nothing changes.
+	 * 
+	 * Obs: Must be called on main thread
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setTitle(String title){
+		if (title == null) return;
+		if (valid) glfwSetWindowTitle(WINDOW_ID, title);
+		else{
+			throw new IllegalStateException("Unable change title, GLFW window does not exist!");
 		}
-		System.err.println("Não fiz!");
+	}
+	
+	/**
+	 * Defines the visibility of this window. TRUE = visible, FALSE = hidden.
+	 * If the window is in fullscreen mode, nothing happens.
+	 * 
+	 * Obs: Must be called on main thread
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setVisible(boolean visible){
+		if (valid){
+			if (visible) glfwShowWindow(WINDOW_ID); //TODO: apenas thread principal!
+			else glfwHideWindow(WINDOW_ID); //TODO: apenas thread principal!
+		}
+		else{
+			throw new IllegalStateException("Unable change visibility, GLFW window does not exist!");
+		}
 	}
 	
 	/**
@@ -109,41 +159,6 @@ public class GLFWWindow_Wrapper {
 			throw new IllegalStateException("Unable to change size, GLFW window does not exist!");
 		}
 	}
-
-	/**
-	 * Defines the visibility of this window. TRUE = visible, FALSE = hidden.
-	 * If the window is in fullscreen mode, nothing happens.
-	 * 
-	 * Obs: Must be called on main thread
-	 * 
-	 * Throws IllegalStateException if this window was not successfully created.
-	 * 
-	 */
-	public void setVisible(boolean visible){
-		if (valid){
-			if (visible) glfwShowWindow(WINDOW_ID); //TODO: apenas thread principal!
-			else glfwHideWindow(WINDOW_ID); //TODO: apenas thread principal!
-		}
-		else{
-			throw new IllegalStateException("Unable change visibility, GLFW window does not exist!");
-		}
-	}
-
-	/**
-	 * Changes the title of this window. If the string is NULL, nothing changes.
-	 * 
-	 * Obs: Must be called on main thread
-	 * 
-	 * Throws IllegalStateException if this window was not successfully created.
-	 * 
-	 */
-	public void setTitle(String title){
-		if (title == null) return;
-		if (valid) glfwSetWindowTitle(WINDOW_ID, title);
-		else{
-			throw new IllegalStateException("Unable change title, GLFW window does not exist!");
-		}
-	}
 	
 	/**
 	 * Defines limits for resizing this window. If the window is not resizable, nothing changes.
@@ -161,7 +176,7 @@ public class GLFWWindow_Wrapper {
 		if (minWidth < 1 || minHeight < 1 || minWidth > maxWidth || minHeight > maxHeight) return;
 		glfwSetWindowSizeLimits(WINDOW_ID, minWidth, minHeight, maxWidth, maxHeight);
 	}
-	
+
 	/**
 	 * Sets the value of the close flag of this window. This can be used to override 
 	 * the user's attempt to close the window, or to signal that it should be closed.
@@ -193,37 +208,84 @@ public class GLFWWindow_Wrapper {
 		}
 		return (glfwWindowShouldClose(WINDOW_ID) == GLFW_TRUE);
 	}
-
+	
 	/**
-	 * Returns a number that identifies this window in GLFW functions.
+	 * Sets a callback function for when the window is iconified (minimized) or restored.
 	 * 
 	 * Throws IllegalStateException if this window was not successfully created.
 	 * 
-	 * @return unique ID for this window.
 	 */
-	public long getID(){
-		if (!valid){
-			throw new IllegalStateException("Unable access ID, GLFW window does not exist!");
-		}
-		return WINDOW_ID;
-	}
-
-
 	public void setWindowCallback(GLFWWindowIconifyCallback callback){
 		if (!valid){
 			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
 		}
-		
-		//TODO: Todos os callbacks, sobrecarregar
-		//glfwSetWindowIconifyCallback()
-		//glfwSetWindowPosCallback()
-		//glfwSetWindowRefreshCallback()
-		//glfwSetWindowSizeCallback()
-		//glfwSetWindowFocusCallback()
-		//glfwSetWindowCloseCallback()
+		if (callback != null) glfwSetWindowIconifyCallback(WINDOW_ID, callback);
+	}
+	
+	/**
+	 * Sets a callback function for when the window is moved.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setWindowCallback(GLFWWindowPosCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetWindowPosCallback(WINDOW_ID, callback);
+	}
+	
+	/**
+	 * Sets a callback function for when this window's content needs to be redrawn.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setWindowCallback(GLFWWindowRefreshCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetWindowRefreshCallback(WINDOW_ID, callback);
 	}
 
-	
+	/**
+	 * Sets a callback function for when the window is resized.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setWindowCallback(GLFWWindowSizeCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetWindowSizeCallback(WINDOW_ID, callback);
+	}
+
+	/**
+	 * Sets a callback function for when the window gains/loses input focus.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setWindowCallback(GLFWWindowFocusCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetWindowFocusCallback(WINDOW_ID, callback);
+	}
+
+	/**
+	 * Sets a callback function for when the user attempts to close this window.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setWindowCallback(GLFWWindowCloseCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set callback function, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetWindowCloseCallback(WINDOW_ID, callback);
+	}
 	
 	/**
 	 * Sets the cursor as current for this window. 
@@ -231,7 +293,7 @@ public class GLFWWindow_Wrapper {
 	 * Throws IllegalStateException if this window was not successfully created.
 	 * 
 	 */
-	public void setCursor(GLFWCursor_Wrapper cursor){
+	public void setCursor(GLFW_Cursor cursor){
 		if (!valid){
 			throw new IllegalStateException("Unable set cursor, GLFW window does not exist!");
 		}
@@ -276,7 +338,7 @@ public class GLFWWindow_Wrapper {
 	 * Throws IllegalStateException if this window was not successfully created.
 	 * 
 	 */
-	public void setMouseCallBack(GLFWCursorEnterCallback callback){
+	public void setMouseCallback(GLFWCursorEnterCallback callback){
 		if (!valid){
 			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
 		}
@@ -289,7 +351,7 @@ public class GLFWWindow_Wrapper {
 	 * Throws IllegalStateException if this window was not successfully created.
 	 * 
 	 */
-	public void setMouseCallBack(GLFWScrollCallback callback){
+	public void setMouseCallback(GLFWScrollCallback callback){
 		if (!valid){
 			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
 		}
@@ -302,7 +364,7 @@ public class GLFWWindow_Wrapper {
 	 * Throws IllegalStateException if this window was not successfully created.
 	 * 
 	 */
-	public void setMouseCallBack(GLFWMouseButtonCallback callback){
+	public void setMouseCallback(GLFWMouseButtonCallback callback){
 		if (!valid){
 			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
 		}
@@ -315,31 +377,65 @@ public class GLFWWindow_Wrapper {
 	 * Throws IllegalStateException if this window was not successfully created.
 	 * 
 	 */
-	public void setMouseCallBack(GLFWCursorPosCallback callback){
+	public void setMouseCallback(GLFWCursorPosCallback callback){
 		if (!valid){
 			throw new IllegalStateException("Unable to set mouse callback, GLFW window does not exist!");
 		}
 		if (callback != null) glfwSetCursorPosCallback(WINDOW_ID, callback);
 	}
+	
+	/**
+	 * Sets a callback function for key interaction.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setKeyCallback(GLFWKeyCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set key callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetKeyCallback(WINDOW_ID, callback);
+	}
+	
+	/**
+	 * Sets a callback function for text input.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setTextCallback(GLFWCharCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set text callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetCharCallback(WINDOW_ID, callback);
+	}
+	
+	/**
+	 * Sets a callback function for text input, including modifiers.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public void setTextCallback(GLFWCharModsCallback callback){
+		if (!valid){
+			throw new IllegalStateException("Unable to set text callback, GLFW window does not exist!");
+		}
+		if (callback != null) glfwSetCharModsCallback(WINDOW_ID, callback);
+	}
 
 	
-	//glfwGetCursorPos(window, &xpos, &ypos);
-	
-	//glfwSetFramebufferSizeCallback()
-	//glfwSetKeyCallback()
-	//int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	
 	//TODO: verificar se são necessários
-	//glfwGetWindowUserPointer()
 	//glfwSetWindowUserPointer()
-	//glfwSwapBuffers()
+	//glfwGetWindowUserPointer()
 	//glfwGetWindowSize() -- screen coordinates
 	//glfwGetWindowMonitor()
 	//glfwGetWindowPos()
 	//glfwGetWindowFrameSize() -- meh
 	//glfwGetWindowAttrib() -- varios retornos
 	//glfwGetFramebufferSize() -- nice
-	//glfwFocusWindow() 
+	//glfwFocusWindow()
+	//glfwSwapBuffers()
+	//glfwSetFramebufferSizeCallback()
 	
 	//TODO: Versão 3.2
 	//glfwSetWindowAspectRatio()

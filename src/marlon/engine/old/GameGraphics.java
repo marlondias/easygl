@@ -46,9 +46,10 @@ public class GameGraphics {
     	};
     	
     	float[] colors = new float[]{
-    	    1.0f, 0.3f, 0.7f,
-    	    1.0f, 0.5f, 0.5f,
-    	    1.0f, 0.7f, 0.3f,
+    	    1.0f, 0.0f, 0.0f,
+    	    0.0f, 1.0f, 0.0f,
+    	    0.0f, 0.0f, 1.0f,
+    	    1.0f, 1.0f, 0.0f,
     	};
     	
     	int[] indices = new int[]{ 0,1,2,2,1,3 };
@@ -68,12 +69,14 @@ public class GameGraphics {
         	//Bind to the VAO
 			glBindVertexArray(mesh.getVAO());
 			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
 			
 			//Draw the vertices
 			glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
             
 			// Restore state
 			glDisableVertexAttribArray(0);
+			glDisableVertexAttribArray(1);
 			glBindVertexArray(0);
 			shader.unbind();
 			

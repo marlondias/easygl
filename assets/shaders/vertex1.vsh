@@ -1,9 +1,9 @@
-#version 130
+#version 120
 
 attribute vec3 position;
 attribute vec3 color;
 
-out vec3 exColor;
+varying vec3 exColor;
 
 void main()
 {

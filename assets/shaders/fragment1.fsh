@@ -1,6 +1,6 @@
-#version 130
+#version 120
 
-vec3 exColor;
+varying vec3 exColor;
 
 void main()
 {

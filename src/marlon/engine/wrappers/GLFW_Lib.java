@@ -1,7 +1,6 @@
 package marlon.engine.wrappers;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -31,7 +30,7 @@ public class GLFW_Lib {
 			return;
 		}
 		glfwSetErrorCallback(errorCallback);
-		if(glfwInit() != GL_TRUE){
+		if(!glfwInit()){
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
 		defaultVideoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
@@ -44,7 +43,7 @@ public class GLFW_Lib {
 	 */
 	public static void terminateGLFW(){
 		glfwTerminate();
-		errorCallback.release();
+		errorCallback.free();
 		initialized = false;
 		System.out.println("GLFW was terminated!");
 	}

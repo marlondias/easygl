@@ -5,10 +5,13 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
+import org.joml.Matrix4f;
+import org.joml.MatrixStackf;
+
+import marlon.engine.experimental.Assets;
 import marlon.engine.experimental.Mesh;
 import marlon.engine.wrappers.GLFW_Cursor;
 import marlon.engine.wrappers.GLFW_Window;
-import marlon.engine.wrappers.GL_ShaderCode;
 import marlon.engine.wrappers.GL_ShaderProgram;
 import marlon.engine.wrappers.GLFW_Lib;
 
@@ -17,6 +20,11 @@ public class GameGraphics {
 	private GLFW_Cursor cursor1;
 	private GL_ShaderProgram shader;
 	private Mesh mesh;
+	
+	private static final float FOV = (float) Math.toRadians(60.0f);
+	private static final float Z_NEAR = 0.01f;
+	private static final float Z_FAR = 1000.f;
+	private Matrix4f projectionMatrix;
 
 	
 	public GameGraphics(){
@@ -27,11 +35,9 @@ public class GameGraphics {
     	janela1.setVisible(true);
     	GLFW_Lib.setContextCurrent(janela1);
     	
-    	GL_ShaderCode shader1 = new GL_ShaderCode(GL_VERTEX_SHADER, "assets/shaders/vertex1.vsh");
-    	GL_ShaderCode shader2 = new GL_ShaderCode(GL_FRAGMENT_SHADER, "assets/shaders/fragment1.fsh");
     	shader = new GL_ShaderProgram();
-    	shader.attachShader(shader1);
-    	shader.attachShader(shader2);
+    	shader.attachShader(Assets.vertShader1);
+    	shader.attachShader(Assets.fragShader1);
     	
     	glBindAttribLocation(shader.getID(), 0, "position");
     	glBindAttribLocation(shader.getID(), 1, "color");
@@ -55,6 +61,11 @@ public class GameGraphics {
     	int[] indices = new int[]{ 0,1,2,2,1,3 };
 
     	mesh = new Mesh(verts, colors, indices);
+    	
+    	
+    	float aspectRatio = (float)	janela1.getWindowWidth() / janela1.getWindowHeight();
+    	projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+    	
 	}
 	
 	

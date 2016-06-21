@@ -1,6 +1,5 @@
 package marlon.engine.experimental;
 
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowIconifyCallback;
@@ -18,8 +17,8 @@ public class DebugWindowCallbacks {
 	
 	private static GLFWWindowFocusCallback focusCB = new GLFWWindowFocusCallback(){
 		@Override
-		public void invoke(long window, int focused){
-			if (focused == GLFW.GLFW_TRUE) System.out.println("Window " + window + " has focus!");
+		public void invoke(long window, boolean focused){
+			if (focused) System.out.println("Window " + window + " has focus!");
 			else System.out.println("Window " + window + " lost focus!");
 		}
 	};
@@ -47,8 +46,8 @@ public class DebugWindowCallbacks {
 	
 	private static GLFWWindowIconifyCallback iconifyCB = new GLFWWindowIconifyCallback(){
 		@Override
-		public void invoke(long window, int iconified){
-			if (iconified == GLFW.GLFW_TRUE) System.out.println("Window was iconified!");
+		public void invoke(long window, boolean iconified){
+			if (iconified) System.out.println("Window was iconified!");
 			else System.out.println("Window was restored");
 		}
 	};

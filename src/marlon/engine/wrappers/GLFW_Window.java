@@ -1,8 +1,7 @@
 package marlon.engine.wrappers;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
-
+import java.nio.IntBuffer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCharModsCallback;
 import org.lwjgl.glfw.GLFWCursorEnterCallback;
@@ -16,6 +15,8 @@ import org.lwjgl.glfw.GLFWWindowIconifyCallback;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowRefreshCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 //Encapsula uma janela GLFW
 public class GLFW_Window {
@@ -176,6 +177,44 @@ public class GLFW_Window {
 		if (minWidth < 1 || minHeight < 1 || minWidth > maxWidth || minHeight > maxHeight) return;
 		glfwSetWindowSizeLimits(WINDOW_ID, minWidth, minHeight, maxWidth, maxHeight);
 	}
+	
+	/**
+	 * Returns the width of this window, in screen coordinates.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public int getWindowWidth(){
+		if (!valid){
+			throw new IllegalStateException("Unable to change size, GLFW window does not exist!");
+		}
+		
+		int value = 0;
+		IntBuffer buff = BufferUtils.createIntBuffer(1);
+		buff.put(value).flip();
+		
+		glfwGetWindowSize(WINDOW_ID, buff, null);
+		return value;
+	}
+
+	/**
+	 * Returns the height of this window, in screen coordinates.
+	 * 
+	 * Throws IllegalStateException if this window was not successfully created.
+	 * 
+	 */
+	public int getWindowHeight(){
+		if (!valid){
+			throw new IllegalStateException("Unable to change size, GLFW window does not exist!");
+		}
+
+		int value = 0;
+		IntBuffer buff = BufferUtils.createIntBuffer(1);
+		buff.put(value).flip();
+		
+		glfwGetWindowSize(WINDOW_ID, null, buff);
+		return value;
+	}
 
 	/**
 	 * Sets the value of the close flag of this window. This can be used to override 
@@ -190,7 +229,7 @@ public class GLFW_Window {
 		if (!valid){
 			throw new IllegalStateException("Unable set flag, GLFW window does not exist!");
 		}
-		else glfwSetWindowShouldClose(WINDOW_ID, ((value) ? GLFW_TRUE : GLFW_FALSE));
+		else glfwSetWindowShouldClose(WINDOW_ID, value);
 	}
 	
 	/**
@@ -206,7 +245,7 @@ public class GLFW_Window {
 		if (!valid){
 			throw new IllegalStateException("Unable access flag, GLFW window does not exist!");
 		}
-		return (glfwWindowShouldClose(WINDOW_ID) == GLFW_TRUE);
+		return (glfwWindowShouldClose(WINDOW_ID));
 	}
 	
 	/**

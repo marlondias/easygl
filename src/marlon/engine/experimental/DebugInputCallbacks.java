@@ -10,8 +10,8 @@ import org.lwjgl.glfw.GLFWScrollCallback;
 public class DebugInputCallbacks {
 	private static GLFWCursorEnterCallback cursorEnterCB = new GLFWCursorEnterCallback(){
 		@Override
-		public void invoke(long window, int entered){
-			if (entered == GLFW.GLFW_TRUE) System.out.println("Estou dentro da janela " + window + "!");
+		public void invoke(long window, boolean entered){
+			if (entered) System.out.println("Estou dentro da janela " + window + "!");
 			else System.out.println("Estou fora da janela!");
 		}
 	};

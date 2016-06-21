@@ -51,10 +51,6 @@ public class GL_ShaderProgram {
 	
 	public void detachShaders(){
 		//Retira todos os shaders associados ao programa
-		IntBuffer shaders = glGetAttachedShaders(PROGRAM_ID);
-		for (int shad : shaders.array()){
-			glDetachShader(PROGRAM_ID, shad);
-		}
 	}
 	
 	public void link(){

@@ -2,6 +2,7 @@ package marlon.engine.wrappers;
 
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCharModsCallback;
 import org.lwjgl.glfw.GLFWCursorEnterCallback;

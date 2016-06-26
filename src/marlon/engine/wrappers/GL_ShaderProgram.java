@@ -1,6 +1,11 @@
 package marlon.engine.wrappers;
 
-import java.nio.IntBuffer;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL40;
 import static org.lwjgl.opengl.GL20.*;
@@ -8,11 +13,13 @@ import static org.lwjgl.opengl.GL20.*;
 public class GL_ShaderProgram {
 	private final int PROGRAM_ID;
 	private boolean valid;
+	private	final Map<String, Integer> uniforms;
 	
 	
 	public GL_ShaderProgram(){
 		PROGRAM_ID = glCreateProgram();
 		valid = (PROGRAM_ID != 0);
+		uniforms = new HashMap<>();
 	}
 	
 	
@@ -51,6 +58,7 @@ public class GL_ShaderProgram {
 	
 	public void detachShaders(){
 		//Retira todos os shaders associados ao programa
+		System.err.println("DETACH SHADERS não implementado!");
 	}
 	
 	public void link(){
@@ -69,6 +77,21 @@ public class GL_ShaderProgram {
 			System.err.println("Error: shader validation failed!");
 			System.err.println(glGetShaderInfoLog(PROGRAM_ID));
 		}
+	}
+	
+	public void createUniform(String name){
+		int uniformLocation = glGetUniformLocation(PROGRAM_ID, name);
+		if (uniformLocation < 0){
+			//Não encontrado
+			return;
+		}
+		uniforms.put(name, uniformLocation);
+	}
+	
+	public void setUniform(String name, Matrix4f value){
+		FloatBuffer fb = BufferUtils.createFloatBuffer(16);
+		value.get(fb);
+		glUniformMatrix4fv(uniforms.get(name), false, fb);
 	}
 	
 	public void bind(){

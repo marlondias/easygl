@@ -1,4 +1,4 @@
-package marlon.engine.experimental;
+package marlon.engine.graphics3D;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -75,6 +75,21 @@ public class Mesh {
 		//Delete the VAO
 		glBindVertexArray(0);
 		glDeleteVertexArrays(VAO_ID);
+	}
+	
+	public void render(){
+    	//Bind the VAO
+		glBindVertexArray(VAO_ID);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		
+		//Draw the vertices
+		glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
+        
+		// Restore state
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
 	}
 
 }
